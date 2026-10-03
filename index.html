@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Para ti 💌</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#C9DCE8;--ink:#4a1d35;--pink:#ff5c93;--yellow:#ffd84d;--paper:#EDE0D4;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2a1224;--ink:#ffe8f1}}
+:root[data-theme="dark"]{--bg:#2a1224;--ink:#ffe8f1}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Fredoka,system-ui,sans-serif;min-height:100vh}
+[hidden]{display:none!important}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--pink);outline-offset:3px}
+#cover{min-height:100vh;width:100%;background:none;border:0;color:inherit;display:grid;place-content:center;gap:6px;text-align:center}
+#cover .env{font-size:110px;line-height:1;animation:bob 1.6s ease-in-out infinite}
+#cover span{font-family:Caveat,cursive;font-size:38px}
+@keyframes bob{50%{transform:translateY(-10px) rotate(-4deg)}}
+#main{max-width:480px;margin:0 auto;padding:14px 12px 30px}
+.bar{display:flex;justify-content:center;margin-bottom:6px}
+.bar button,.paper button{background:var(--yellow);color:#4a1d35;border:0;border-radius:999px;padding:8px 16px;font-weight:600;box-shadow:0 3px 0 #0002}
+svg{width:100%;height:auto;display:block;overflow:visible}
+.br{fill:none;stroke:#4fae7c;stroke-width:3;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.2s .3s ease-out forwards}
+.lf{fill:#6cc895;opacity:0;animation:pop .4s 1.2s forwards}
+.fr{cursor:pointer;opacity:0;animation:pop .5s 1.1s forwards;filter:drop-shadow(0 4px 5px #0004)}
+#hs{cursor:pointer;transform-box:fill-box;transform-origin:center;animation:beat 1.3s ease-in-out infinite;filter:drop-shadow(0 8px 10px #ff5c9377)}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes pop{to{opacity:1}}
+@keyframes beat{0%,100%{transform:scale(1)}20%{transform:scale(1.06)}40%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.br,.lf,.fr{animation:none;opacity:1;stroke-dashoffset:0}#hs,#cover .env{animation:none}}
+.overlay{position:fixed;inset:0;background:#000a;display:grid;place-items:center;padding:16px;z-index:5}
+.paper{background:var(--paper);color:#4a1d35;border-radius:20px;width:100%;max-width:440px;max-height:92vh;overflow:auto;padding:20px;box-shadow:0 12px 40px #0006}
+.paper h2{font-family:Caveat,cursive;font-size:38px;margin:0 0 6px}
+#txt{font-family:Caveat,cursive;font-size:25px;line-height:1.35;white-space:pre-wrap}
+video{width:100%;border-radius:14px;margin:12px 0;background:#000}
+#lb img{max-width:100%;max-height:90vh;border:8px solid #FFE38A;border-radius:16px}
+</style></head>
+<body>
+<button id="cover" aria-label="Toca para abrir"><div class="env">💌</div><span>Toca para abrir</span></button>
+
+<main id="main" hidden>
+   <h1><center>Para mi camarada favorito ☭</center></h1>
+  <svg id="art" viewBox="0 0 400 560" role="img" aria-label="Corazón con marcos de fotos"></svg>
+</main>
+
+<div id="letter" class="overlay" hidden>
+  <div class="paper">
+    <h2 id="ttl"></h2>
+    <div id="txt"></div>
+    <video id="vid" controls playsinline hidden></video>
+    <button id="close">Cerrar</button>
+  </div>
+</div>
+<div id="lb" class="overlay" hidden><img alt="Foto"></div>
+
+<audio id="audio" loop></audio>
+
+<script>
+/* ============ EDITA AQUÍ ============ */
+const CONFIG = {
+  corazon: "Toca aquí",
+  titulo: "Mi morenito de chocolate",
+
+
+  carta: `Felíz dia del novio mi amorcito, espero que te guste este detallito que hice para ti.
+
+Aunque estemos lejos, con este detalle quiero recordarte lo mucho que te quiero, te mereces esto y más por ser el mejor novio del mundo. Gracias por estar en mi vida❤️ 
+
+
+Te dedico esta canción mi corazón:`,
+  // Rutas de tus archivos dentro del repositorio. Deja "" si no quieres usar alguno.
+  fotos: [
+    "Elché.jpg",
+    "Elché2.jpg",
+    "Platón.jpg",
+    "Platón2.jpg",
+    "Tomás.jpg",
+    "Tomás2.jpg"
+  ],
+  video: "WhatsApp Video 2026-10-02 at 9.48.41 PM.mp4",
+  musica: "audio.mp4"
+};
+/* ================================== */
+
+const $=s=>document.querySelector(s),audio=$('#audio'),vid=$('#vid');
+const C=[200,275],F=[[70,85,-6],[330,85,5],[48,285,4],[352,285,-5],[78,480,6],[322,480,-4]];
+let svg='';
+F.forEach(([x,y],i)=>{
+  const mx=(C[0]+x)/2,my=(C[1]+y)/2,cx=mx+(y-C[1])*.25,cy=my-(x-C[0])*.25;
+  svg+=`<path class="br" pathLength="1" d="M${C} Q${cx} ${cy} ${x} ${y}"/>`;
+  [.35,.55,.75].forEach((t,k)=>{
+    const u=1-t,px=u*u*C[0]+2*u*t*cx+t*t*x,py=u*u*C[1]+2*u*t*cy+t*t*y;
+    const dx=2*u*(cx-C[0])+2*t*(x-cx),dy=2*u*(cy-C[1])+2*t*(y-cy);
+    const a=Math.atan2(dy,dx)*180/Math.PI+(k%2?-45:45);
+    svg+=`<ellipse class="lf" cx="9" rx="9" ry="4" transform="translate(${px} ${py}) rotate(${a})"/>`;
+  });
+});
+/* El grupo exterior centra el corazón; el interior (#hs) es el que late */
+svg+=`<g transform="translate(200 275) scale(1.9) translate(-50 -46)"><g id="hs" tabindex="0" role="button" aria-label="Abrir carta">
+<path d="M50 88C10 58 0 32 14 16C28 0 46 8 50 22C54 8 72 0 86 16C100 32 90 58 50 88Z" fill="#ff5c93"/>
+<path d="M22 22C28 14 38 14 42 22" stroke="#fff" stroke-opacity=".5" stroke-width="3" fill="none" stroke-linecap="round"/>
+<text id="ht" x="50" y="50" text-anchor="middle" font-family="Caveat,cursive" font-size="14" fill="#fff"></text></g></g>`;
+F.forEach(([x,y,r],i)=>{
+  svg+=`<g class="fr" data-i="${i}" tabindex="0" role="button" aria-label="Foto ${i+1}" transform="translate(${x} ${y}) rotate(${r})" style="animation-delay:${1+i*.12}s">
+<rect x="-46" y="-46" width="92" height="92" rx="14" fill="#fff"/>
+<rect x="-40" y="-40" width="80" height="80" rx="9" fill="#ffe3ee"/>
+<text y="10" text-anchor="middle" font-size="28">📷</text>
+<clipPath id="c${i}"><rect x="-40" y="-40" width="80" height="80" rx="9"/></clipPath>
+<image id="im${i}" clip-path="url(#c${i})" x="-40" y="-40" width="80" height="80" preserveAspectRatio="xMidYMid slice"/></g>`;
+});
+$('#art').innerHTML=svg;
+$('#ht').textContent=CONFIG.corazon;
+$('#ttl').textContent=CONFIG.titulo;
+$('#txt').textContent=CONFIG.carta;
+
+/* Fotos: se ven en el marco y, al tocarlas, en grande */
+F.forEach((_,i)=>{
+  const src=CONFIG.fotos[i],im=$('#im'+i),g=im.parentNode;
+  if(!src)return;
+  im.addEventListener('error',()=>im.remove());
+  im.setAttribute('href',src);
+  const show=()=>{$('#lb img').src=src;$('#lb').hidden=false};
+  g.onclick=show;g.onkeydown=e=>{if(e.key==='Enter'||e.key===' ')show()};
+});
+$('#lb').onclick=()=>$('#lb').hidden=true;
+
+/* Carta y video */
+if(CONFIG.video){vid.src=CONFIG.video;vid.hidden=false}
+const openL=()=>$('#letter').hidden=false;
+$('#hs').onclick=openL;$('#hs').onkeydown=e=>{if(e.key==='Enter'||e.key===' ')openL()};
+$('#close').onclick=()=>{$('#letter').hidden=true;vid.pause()};
+vid.onplay=()=>{audio.pause();$('#play').textContent='▶ Reproducir música'};
+
+/* Música */
+if(CONFIG.musica)audio.src=CONFIG.musica; else $('.bar').hidden=true;
+$('#cover').onclick=()=>{
+  $('#cover').hidden=true;$('#main').hidden=false;
+  if(CONFIG.musica)audio.play().catch(()=>{$('#play').textContent='▶ Reproducir música'});
+};
+$('#play').onclick=()=>{
+  if(audio.paused){audio.play();$('#play').textContent='⏸ Pausar música'}
+  else{audio.pause();$('#play').textContent='▶ Reproducir música'}
+};
+</script>
+</body></html>
